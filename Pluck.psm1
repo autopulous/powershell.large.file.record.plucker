@@ -99,7 +99,7 @@ function Pluck {
 
     if ($black) {$color = "Black"}
     if ($blue) {$color = "Blue"}
-    if ($cyan) {$color = "Blue"}
+    if ($cyan) {$color = "Cyan"}
     if ($darkblue) {$color = "DarkBlue"}
     if ($darkcyan) {$color = "DarkCyan"}
     if ($darkgray) {$color = "DarkGray"}
@@ -145,28 +145,28 @@ function Pluck {
         $count = $end - $start + 1
     }
 
-    function Write-Line {
-        Param($line)
 
-        if ($index) {
-            Write-Host $start -NoNewline
-            $start += 1
-        }
+    $row = $start
 
-        Write-Host $line -ForegroundColor $color
-    }
 
     if ($count -lt 1) {
-        foreach ($line in Get-Content $path) {
-            Write-Line $line
-        }
+        $command = 'Get-Content $path | Select-Object -Skip $start'
     }
     else {
-        foreach ($line in (Get-Content $path | Select-Object -Skip $start -First $count)) {
-            Write-Line $line
+        $command = 'Get-Content $path | Select-Object -Skip $start -First $count'
+    }
+    
+    foreach ($line in Invoke-Expression $command) {
+        if ($index) {
+            Write-Host $row $line -ForegroundColor $color
+            $row += 1
+        }
+        else {
+            Write-Host $line -ForegroundColor $color
         }
     }
 
+    
     Write-Host
 }
 
